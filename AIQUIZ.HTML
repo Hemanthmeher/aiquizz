@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI and ML Quiz</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #e0f7fa;
+            background-image: url('C:\coding website\pngtree-modern-simple-elegant-dark-blue-landing-page-website-background-image_756950.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 20px auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #00bcd4;
+        }
+        .question {
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #e0f7fa;
+        }
+        button {
+            background-color: #00bcd4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #00acc1;
+        }
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #login-form, #signup-form, #topic-select, #quiz, #results {
+            display: none;
+        }
+        #login-form.active, #signup-form.active, #topic-select.active, #quiz.active, #results.active {
+            display: block;
+        }
+        #progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            padding: 3px;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+        }
+        #progress-bar-fill {
+            display: block;
+            height: 22px;
+            background-color: #00bcd4;
+            border-radius: 3px;
+            transition: width 500ms ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-form" class="active">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+        </div>
+
+        <div id="signup-form">
+            <h2>Sign Up</h2>
+            <input type="text" id="signup-username" placeholder="Username">
+            <input type="password" id="signup-password" placeholder="Password">
+            <button onclick="signup()">Sign Up</button>
+            <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </div>
+
+        <div id="topic-select">
+            <h2>Select Quiz Topic</h2>
+            <select id="topic">
+                <option value="ai">Artificial Intelligence</option>
+                <option value="ml">Machine Learning</option>
+            </select>
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz">
+            <h1>AI and ML Quiz</h1>
+            <div id="progress-bar">
+                <span id="progress-bar-fill"></span>
+            </div>
+            <div id="question-container"></div>
+            <button onclick="submitAnswer()">Next</button>
+        </div>
+
+        <div id="results">
+            <h2>Quiz Results</h2>
+            <div id="score-display"></div>
+            <canvas id="result-chart" width="400" height="400"></canvas>
+            <button onclick="retakeQuiz()">Retake Quiz</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+       const questions = [
+            {
+                question: "What is machine learning?",
+                options: ["A type of artificial intelligence", "A programming language", "A database management system", "A hardware component"],
+                correct: 0
+            },
+            {
+                question: "What does AI stand for?",
+                options: ["Artificial Intelligence", "Automated Integration", "Advanced Information", "Algorithmic Iteration"],
+                correct: 0
+            },
+            {
+                question: "Which of these is a type of machine learning?",
+                options: ["Supervised learning", "Automatic learning", "Manual learning", "Cognitive learning"],
+                correct: 0
+            },
+            {
+                question: "What is deep learning?",
+                options: ["A subset of machine learning", "A type of database", "A programming paradigm", "A hardware architecture"],
+                correct: 0
+            },
+            {
+                question: "What is a neural network?",
+                options: ["A model inspired by the human brain", "A physical network of computers", "A type of computer memory", "A programming language"],
+                correct: 0
+            },
+            {
+                question: "What is the Turing test used for?",
+                options: ["Evaluating machine intelligence", "Testing computer hardware", "Debugging software", "Measuring network speed"],
+                correct: 0
+            },
+            {
+                question: "What is natural language processing?",
+                options: ["AI understanding and generating human language", "A biological process", "A type of programming language", "A data storage method"],
+                correct: 0
+            },
+            {
+                question: "What is reinforcement learning?",
+                options: ["Learning through trial and error", "Learning from labeled data", "Learning from unlabeled data", "Learning through direct instruction"],
+                correct: 0
+            },
+            {
+                question: "What is computer vision?",
+                options: ["AI interpreting visual information", "A type of computer display", "A programming paradigm", "A data storage method"],
+                correct: 0
+            },
+            {
+                question: "What is a decision tree in machine learning?",
+                options: ["A predictive model", "A type of computer hardware", "A programming language", "A database structure"],
+                correct: 0
+            },
+            {
+                question: "What is overfitting in machine learning?",
+                options: ["Model performs well on training data but poorly on new data", "When a model is too simple", "When a dataset is too small", "When training takes too long"],
+                correct: 0
+            },
+            {
+                question: "What is clustering in machine learning?",
+                options: ["Grouping similar data points", "Creating decision trees", "Training neural networks", "Optimizing algorithms"],
+                correct: 0
+            },
+            {
+                question: "What is the purpose of the activation function in neural networks?",
+                options: ["Introduce non-linearity", "Speed up computation", "Reduce overfitting", "Increase network size"],
+                correct: 0
+            },
+            {
+                question: "What is transfer learning?",
+                options: ["Using knowledge from one task for another", "Transferring data between computers", "A type of neural network", "A method of data augmentation"],
+                correct: 0
+            },
+            {
+                question: "What is the difference between AI and ML?",
+                options: ["ML is a subset of AI", "AI is a subset of ML", "They are unrelated fields", "They are the same thing"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let currentUser = null;
+
+        function showLogin() {
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+        }
+
+        function showSignup() {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('signup-form').classList.add('active');
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            // In a real app, you would validate against a server
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                document.getElementById('login-form').classList.remove('active');
+                document.getElementById('topic-select').classList.add('active');
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        function signup() {
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            
+            // In a real app, you would send this to a server
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            if (users[username]) {
+                alert('Username already exists');
+            } else {
+                users[username] = { password: password };
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Signup successful. Please login.');
+                showLogin();
+            }
+        }
+
+        function startQuiz() {
+            document.getElementById('topic-select').classList.remove('active');
+            document.getElementById('quiz').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById('question-container');
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                let html = `<div class="question">
+                    <h3>Question ${currentQuestion + 1}: ${q.question}</h3>
+                    <div class="options">`;
+                
+                q.options.forEach((option, index) => {
+                    html += `<label class="option">
+                        <input type="radio" name="q${currentQuestion}" value="${index}">
+                        ${option}
+                    </label>`;
+                });
+
+                html += `</div></div>`;
+                questionContainer.innerHTML = html;
+
+                // Update progress bar
+                const progressPercentage = (currentQuestion / questions.length) * 100;
+                document.getElementById('progress-bar-fill').style.width = `${progressPercentage}%`;
+            } else {
+                showResults();
+            }
+        }
+
+        function submitAnswer() {
+            const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (selected) {
+                if (parseInt(selected.value) === questions[currentQuestion].correct) {
+                    score++;
+                }
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            } else {
+                alert('Please select an answer');
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz').classList.remove('active');
+            document.getElementById('results').classList.add('active');
+
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.innerHTML = `<h3>Your score: ${score} out of ${questions.length}</h3>`;
+
+            // Create a simple bar chart
+            const ctx = document.getElementById('result-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        label: 'Quiz Results',
+                        data: [score, questions.length - score],
+                        backgroundColor: ['#4CAF50', '#F44336']
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: questions.length
+                        }
+                    }
+                }
+            });
+
+            // Save score
+            const scores = JSON.parse(localStorage.getItem('scores') || '{}');
+            if (!scores[currentUser]) {
+                scores[currentUser] = [];
+            }
+            scores[currentUser].push(score);
+            localStorage.setItem('scores', JSON.stringify(scores));
+        }
+
+        function retakeQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('topic-select').classList.add('active');
+        }
+
+        function showResults() {
+            document.getElementById('quiz').classList.remove('active');
+            document.getElementById('results').classList.add('active');
+
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.innerHTML = `<h3>Your score: ${score} out of ${questions.length}</h3>`;
+
+            // Create a pie chart
+            const ctx = document.getElementById('result-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        label: 'Quiz Results',
+                        data: [score, questions.length - score],
+                        backgroundColor: ['#4CAF50', '#F44336']
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: questions.length
+                        }
+                    }
+                }
+            });
+
+            // Save score
+            const scores = JSON.parse(localStorage.getItem('scores') || '{}');
+            if (!scores[currentUser]) {
+                scores[currentUser] = [];
+            }
+            scores[currentUser].push(score);
+            localStorage.setItem('scores', JSON.stringify(scores));
+        }
+
+        // ... (keep the rest of the JavaScript code)
+    </script>
+</body>
+</html>
